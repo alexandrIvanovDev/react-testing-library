@@ -1,6 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import App from './App';
 import userEvent from '@testing-library/user-event';
+import axios from 'axios';
 
 describe('App', () => {
     it('renders App component', () => {
@@ -82,9 +83,9 @@ describe('App', () => {
     it('foucs with tab', () => {
         const {getAllByTestId} = (render(
             <div>
-                <input type="checkbox" data-testid='el'/>
-                <input type="radio" data-testid='el'/>
-                <input type="number" data-testid='el'/>
+                <input type="checkbox" data-testid="el"/>
+                <input type="radio" data-testid="el"/>
+                <input type="number" data-testid="el"/>
             </div>))
         const [checkbox, radio, number] = getAllByTestId('el')
 
@@ -108,5 +109,35 @@ describe('App', () => {
         expect(getByText('A').selected).toBeTruthy()
         userEvent.selectOptions(select, '2')
         expect(getByText('B').selected).toBeTruthy()
+    });
+})
+
+jest.mock('axios')
+
+const data = [
+    {id: 1, title: 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit'},
+    {id: 2, title: 'qui est esse'}
+]
+
+describe('mock axios', () => {
+    it('posts should be displayed', async () => {
+        render(<App/>);
+        const button = screen.getByRole('button');
+
+        axios.get.mockImplementation(() => Promise.resolve({data}));
+        userEvent.click(button);
+        const items = await screen.findAllByRole('listitem');
+        expect(items.length).toBe(2)
+        expect(axios.get).toHaveBeenCalledTimes(1)
+        expect(axios.get).toHaveBeenCalledWith('https://jsonplaceholder.typicode.com/posts')
+    });
+    it('error should be displayed', async () => {
+        render(<App/>);
+        const button = screen.getByRole('button');
+
+        axios.get.mockImplementationOnce(() => Promise.reject(new Error()));
+        userEvent.click(button);
+        const error = await screen.findByText(/something went wrong/i);
+        expect(error).toBeInTheDocument()
     });
 })

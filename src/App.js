@@ -1,5 +1,6 @@
 import './App.css';
 import {useEffect, useState} from 'react';
+import {Posts} from './Posts';
 
 const getUser = () => Promise.resolve({id: 1, name: 'Alex'})
 
@@ -23,6 +24,7 @@ function App() {
             {user && <h2>Username {user.name}</h2>}
             <Search value={value} onChange={onChangeValue}>Search:</Search>
             <span>Search for: {value ? value : '...'}</span>
+            <Posts/>
         </div>
     );
 }
