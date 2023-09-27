@@ -1,6 +1,6 @@
 import './App.css';
 import {useEffect, useState} from 'react';
-import {Posts} from './Posts';
+import {Posts} from './components/posts/Posts';
 
 const getUser = () => Promise.resolve({id: 1, name: 'Alex'})
 
